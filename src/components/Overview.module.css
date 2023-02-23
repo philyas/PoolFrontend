@@ -1,0 +1,8 @@
+.flex {
+  background:#032720;
+}
+
+.flex > * {
+    width: 80%;
+    height: 40px;
+}
