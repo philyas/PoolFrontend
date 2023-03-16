@@ -34,7 +34,7 @@ const  ProductDialog = ({openHandler}) => {
 
   return (
     <div>
-      <Button style={{width:'100%', background:'white', color:'#032729'}} variant="contained" onClick={handleClickOpen}>
+      <Button style={{width:'100%', background:'white', color:'#DC143C'}} variant="contained" onClick={handleClickOpen}>
           <FastfoodIcon></FastfoodIcon>
       </Button>
       <Dialog

@@ -8,7 +8,8 @@ import { useEffect, useState } from 'react';
 const Dashboard = ()=> {
     const [data, setData] = useState([])
     const [total, setTotal] = useState()
-    const [month, setMonth] = useState(1)
+    const [subtotal, setSubtotal] = useState()
+    const [month, setMonth] = useState(new Date().getMonth()+1)
     const [year, setYear] = useState(new Date().getFullYear())
     const [pooltime,setPooltime] = useState()
 
@@ -26,8 +27,9 @@ const Dashboard = ()=> {
                     {name:'Dezember', value:12} ]
 
     const fetchData = ()=> {
-        axios.get(`http://localhost:3002/filterorder?month=${month}&year=${year}`).then((res)=> {
+        axios.get(`https://poolbackendservice.onrender.com/filterorder?month=${month}&year=${year}`).then((res)=> {
             setData(res.data.msg.details)
+            setSubtotal(res.data.msg.total[0].subtotal)
             setTotal(res.data.msg.orderandpool)
             setPooltime(res.data.msg.pooltime)
         })
@@ -44,9 +46,9 @@ const Dashboard = ()=> {
     }
 
     return(
-        <Box style={{ background:'white', margin:0, padding:0}}>
-              <Link style={{textDecoration:'none'}} to={"/"}><ArrowBackIcon sx={{margin:2}}></ArrowBackIcon></Link>
-              <Box py={2} px={10}>
+        <Box  sx={{ background:'white', margin:0, padding:2}}>
+              <Link style={{textDecoration:'none'}} to={"/"}><ArrowBackIcon sx={{margin:2, color:'black'}}></ArrowBackIcon></Link>
+              <Box>
                   <Box display={'flex'} gap={2}>
                       <Select onChange={monthHandler} value={month} label={'Monat'}>
                             {months.map((item)=> <MenuItem key={item.value} value={item.value}>{item.name}</MenuItem>)}
@@ -57,11 +59,17 @@ const Dashboard = ()=> {
                         
                   </Box> 
                   <p>{month}/{year}</p>
-                  <Box sx={{height:'65vh', overflowY:'scroll'}}>
+                  <Box >
                        <TableComponent data={data}></TableComponent>
                   </Box>
+                  <Box m={'auto'} mt={3} boxShadow={1}  width={250} p={1} textAlign='center'  >
+                    <p style={{fontFamily:'sans-serif'}}>Orders {Number(subtotal).toFixed(2)} €</p>
+                  </Box>
+                  <Box m={'auto'} width={250}  boxShadow={1} p={1} textAlign='center'  >
+                    <p style={{fontFamily:'sans-serif'}}>Billard {Number(pooltime).toFixed(2)} €</p>
+                  </Box>
         
-                  <Box mt={2} boxShadow={3} py={1} textAlign='center' borderRadius={1} width='100%'>
+                  <Box m={'auto'} width={250}  boxShadow={1} p={1} textAlign='center'  >
                     <p style={{fontFamily:'sans-serif'}}>Summe {Number(total).toFixed(2)} €</p>
                   </Box>
               </Box>
