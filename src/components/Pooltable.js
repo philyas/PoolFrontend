@@ -7,6 +7,8 @@ import { useDispatch } from 'react-redux'
 import { orderAction } from '../slices/OrderSlice'
 import { tableAction } from '../slices/TableSlice'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import billardred from './assets/billardred.png'
+import billardgreen from './assets/billardgreen.png'
 
 
 function Pooltable({source, tableid, busy}){
@@ -15,8 +17,10 @@ function Pooltable({source, tableid, busy}){
     const dispatch = useDispatch()
 
     const createOrder = ()=> {
-        axios.post(`https://poolbackendservice.onrender.com/orders?tableid=${tableid}`).then((res)=> {
-            updateStates()
+        axios.post(`https://poolbackendservice.onrender.com/orders?tableid=${tableid}`, 
+        { } ,  { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+        ).then((res)=> {
+         updateStates()
         }).catch((err)=> {
             alert(err)
         })
@@ -24,11 +28,16 @@ function Pooltable({source, tableid, busy}){
 
 
     const updateStates = ()=> {
-        axios.get(`https://poolbackendservice.onrender.com/orders/all`).then((res)=> {
-            dispatch(orderAction(res.data.msg))
-        })
-        axios.get(`https://poolbackendservice.onrender.com/tables`).then((res)=> {
+        axios.get(`https://poolbackendservice.onrender.com/tables`, 
+        { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+        ).then((res)=> {
             dispatch(tableAction(res.data.msg))
+        })
+
+       axios.get(`https://poolbackendservice.onrender.com/orders/all`, 
+       { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+       ).then((res)=> {
+            dispatch(orderAction(res.data.msg))
         })
     }
 
@@ -58,8 +67,10 @@ function Pooltable({source, tableid, busy}){
     return(
             <Box style={{background:'transparent', position:'relative'}} my={2}>
                 <Box sx={poolStyle} onClick={openMenu}>
-                    <Box boxShadow={5} width={150} height={270} sx={{background: `${busy?'#DC143C':'white'}`, color:`${busy?"white":"gray" }`}} borderRadius={1}>
-                    </Box>
+                    {
+                    <Box boxShadow={5} width={150} height={270} sx={{background: `${'white'}`, color:`${busy?"white":"gray" }`}} borderRadius={1}>
+                         <img width={150} height={270} src={busy? billardred : billardgreen}></img>
+                    </Box> }
                         <p style={{position:'absolute', left:'50%', top:'45%', transform:'translate(-50%,-50%)' }}>{tableid}</p>
                     </Box>
                 <DialogModule btnColor={'black'} hoverColor={'#00003f'}  openHandler={createOrder} buttonName={<PlaylistAddIcon></PlaylistAddIcon>} title={'Sind Sie sicher?'} text={'Bestellung aufnehmen?'}></DialogModule>

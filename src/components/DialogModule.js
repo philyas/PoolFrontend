@@ -7,7 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useState } from 'react';
 
-function DialogModule({openHandler, buttonName, title,text, btnColor, hoverColor, color}) {
+function DialogModule({openHandler, buttonName, title,text, btnColor, hoverColor, color, children}) {
   const [open, setOpen] = useState(false)
 
   const handleClickOpen = () => {
@@ -41,6 +41,7 @@ function DialogModule({openHandler, buttonName, title,text, btnColor, hoverColor
           <DialogContentText id="alert-dialog-description">
            {text}
           </DialogContentText>
+          {children}
         </DialogContent>
         <DialogActions>
           <Button onClick={cancel}>Abbrechen</Button>

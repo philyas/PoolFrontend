@@ -1,4 +1,4 @@
-import {Modal, Box, Grid, Button, FormControlLabel, FormGroup, Checkbox} from '@mui/material'
+import {Modal, Box,  Button, FormControlLabel, FormGroup, Checkbox} from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -11,6 +11,7 @@ import { tableAction} from '../slices/TableSlice'
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
+import ReceiptButton from './ReceiptButton';
 
 
 function Detailview ({onclose,open,tableid}) {
@@ -40,7 +41,7 @@ function Detailview ({onclose,open,tableid}) {
     }
 
     const orderSelector = useSelector((state)=> state.order.value)
-    const OrderSortedByTable = orderSelector.filter((order)=> order.tableid === Number(tableid))
+    const OrderSortedByTable = orderSelector.filter((order)=> order.table_id === Number(tableid))
     const [openSide, setOpenSide] = useState(false)
 
     const getDetail = (orderid, played)=> {
@@ -56,16 +57,16 @@ function Detailview ({onclose,open,tableid}) {
 
  
 
-    const increaseItem = (productname)=> {
-        axios.post(`https://poolbackendservice.onrender.com/additem?orderid=${selectedOrder}&name=${productname}`).then((res)=> {
+    const increaseItem = (productid)=> {
+        axios.post(`https://poolbackendservice.onrender.com/additem?orderid=${selectedOrder}&productid=${productid}`).then((res)=> {
             getDetail(selectedOrder)
         }).catch((err)=> {
             alert(err)
         })
     }
 
-    const decreaseItem = (productname)=> {
-        axios.post(`https://poolbackendservice.onrender.com/removeitem?orderid=${selectedOrder}&name=${productname}`).then((res)=> {
+    const decreaseItem = (productid)=> {
+        axios.post(`https://poolbackendservice.onrender.com/removeitem?orderid=${selectedOrder}&productid=${productid}`).then((res)=> {
             getDetail(selectedOrder)
         }).catch((err)=> {
             alert(err)
@@ -80,8 +81,8 @@ function Detailview ({onclose,open,tableid}) {
 
    const completeOrder = ()=> {
       axios.post(`https://poolbackendservice.onrender.com/completeorder?orderid=${selectedOrder}&played=${played}`).then((res)=> {
-        updateStatus()
         getDetail(selectedOrder, played)
+        updateStatus()
         alert(res.data.msg)
       }).catch((err)=> {
         alert(err)
@@ -90,17 +91,21 @@ function Detailview ({onclose,open,tableid}) {
 
 
    const updateStatus = ()=> {
+    axios.get(`https://poolbackendservice.onrender.com/tables`, 
+    { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+    ).then((res)=> {
+        dispatch(tableAction(res.data.msg))
+    })
+
         axios.get(`https://poolbackendservice.onrender.com/orders/all`).then((res)=> {
             dispatch(orderAction(res.data.msg))
-        })
-        axios.get(`https://poolbackendservice.onrender.com/tables`).then((res)=> {
-            dispatch(tableAction(res.data.msg))
         })
    }
 
 
-   const addItem = (product)=> {
-    axios.post(`https://poolbackendservice.onrender.com/additem?orderid=${selectedOrder}&name=${product}`).then((res)=> {
+   const addItem = (productid)=> {
+    if (!productid) return alert("Bitte Produkt wählen!")
+    axios.post(`https://poolbackendservice.onrender.com/additem?orderid=${selectedOrder}&productid=${productid}`).then((res)=> {
         getDetail(selectedOrder)
       }).catch((err)=> {
         alert(err)
@@ -132,8 +137,6 @@ function Detailview ({onclose,open,tableid}) {
     getProducts()
    },[])
 
-
-
     return(
         <Modal
             style={{margin:0}}
@@ -157,12 +160,12 @@ function Detailview ({onclose,open,tableid}) {
                                 pickHandler(index)
                                 }} p={1} m={1} borderRadius={1} key={index}>
                                 <div style={{display:'flex', flexDirection:'row', justifyContent:'space-around', alignItems:'center'}}>
-                                    <p style={{color:item.completed? "gray" : "white"}}>{new Date(item.createdat).toISOString().split('T')[0]}</p>
-                                    <p style={{color:item.completed? "gray" : "white"}}>{new Date(item.createdat).toISOString().split('T')[1].split('.')[0].slice(0,5)}</p>
-                                    <p style={{color:item.completed? "gray" : "white"}}>{new Date(item.updatedat).toISOString().split('T')[1].split('.')[0].slice(0,5)}</p>
-                                    <Button>{item.completed ? <CheckCircleOutlineIcon sx={{color:'yellowgreen', width:20}}></CheckCircleOutlineIcon> : <MoreHorizIcon sx={{color:'white', width:20}}></MoreHorizIcon>}</Button>
-                                    {item.played? <SportsBaseballIcon sx={{width:20, color:item.completed?"gray":"white"}}></SportsBaseballIcon> : 
-                                    <HorizontalRuleIcon sx={{width:20, color:item.completed?"gray":"white"}}></HorizontalRuleIcon>
+                                    <p style={{color:item.completed? "gray" : "white", flex:'1 1 0'}}>{new Date(item.createdat).toLocaleDateString("de-DE")}</p>
+                                    <p style={{color:item.completed? "gray" : "white", flex:'1 1 0'}}>{new Date(item.createdat).toLocaleTimeString("de-DE").slice(0,5)}</p>
+                                    <p style={{color:item.completed? "gray" : "white", flex:'1 1 0'}}>{new Date(item.updatedat).toLocaleTimeString("de-DE").slice(0,5)}</p>
+                                    <div>{item.completed ? <CheckCircleOutlineIcon sx={{color:'yellowgreen', flex:'1 1 0'}}></CheckCircleOutlineIcon> : <MoreHorizIcon sx={{color:'white', flex:'1 1 0'}}></MoreHorizIcon>}</div>
+                                    {item.played? <SportsBaseballIcon sx={{ flex:'1 1 0', color:item.completed?"gray":"white"}}></SportsBaseballIcon> : 
+                                    <HorizontalRuleIcon sx={{flex:'1 1 0',color:item.completed?"gray":"white"}}></HorizontalRuleIcon>
                                     }
                                 </div>
                             </Box>)}
@@ -180,11 +183,11 @@ function Detailview ({onclose,open,tableid}) {
                                 <p>Bestellungsdetails</p>
                                 { details.map((item,index)=> 
                                 <Box p={1} boxShadow={2} width={'80%'} margin={'auto'} bgcolor={'white'} key={index} display={'flex'} flexDirection={'row'} justifyContent='space-around'>
-                                    <Button onClick={()=> decreaseItem(item.name)} style={{fontWeight:'bold', fontSize:20, color:'#696969'}} >-</Button>
-                                    <p>{item.name}</p> 
-                                    <p>{item.quantity} x</p>   
-                                    <p>{item.price}</p>   
-                                    <Button onClick={()=> increaseItem(item.name)} style={{fontWeight:'bold', fontSize:20, color:'#696969'}}>+</Button>
+                                    <Button onClick={()=> decreaseItem(item.product_id)} style={{flex:'1 1 0',fontWeight:'bold', fontSize:20, color:'#696969'}} >-</Button>
+                                    <p style={{flex:'1 1 0'}}>{item.name}</p> 
+                                    <p style={{flex:'1 1 0'}}>{item.quantity} x</p>   
+                                    <p style={{flex:'1 1 0'}}>{item.price}</p>   
+                                    <Button onClick={()=> increaseItem(item.product_id)} style={{flex:'1 1 0',fontWeight:'bold', fontSize:20, color:'#696969'}}>+</Button>
                                 </Box>   
                                 )}
                                 {selectedOrder ?   <Box boxShadow={3} bgcolor={'white'} width={'80%'}  p={1} margin='2rem auto' display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'center'} gap={2}>
@@ -203,6 +206,7 @@ function Detailview ({onclose,open,tableid}) {
                              title={'Sind Sie sicher?'} text={'Bestellung abschliessen?'} btnColor={'#DC143C'} hoverColor={'red'}
                              ></DialogModule>     
                          </Box>  
+                         <ReceiptButton data={{details:details,total:total}}></ReceiptButton>
 
                      </Box>
                        

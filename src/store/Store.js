@@ -3,6 +3,7 @@ import orderReducer from '../slices/OrderSlice'
 import tableReducer from '../slices/TableSlice'
 import productReducer from '../slices/ProductSlice'
 import informationReducer from '../slices/InformationSlice'
+import tokenReducer from '../slices/TokenSlice'
 
 
 export const Store = configureStore({
@@ -10,6 +11,7 @@ export const Store = configureStore({
     order:orderReducer,
     table:tableReducer,
     product: productReducer,
-    information: informationReducer
+    information: informationReducer,
+    token:tokenReducer
   },
 })
