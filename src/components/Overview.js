@@ -9,6 +9,7 @@ import DialogModule from './DialogModule';
 import TableRestaurant from '@mui/icons-material/TableRestaurant';
 import { orderAction } from '../slices/OrderSlice'
 import { tableAction} from '../slices/TableSlice'
+import {productAction} from '../slices/ProductSlice'
 import { Link } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -21,6 +22,7 @@ import {TextField} from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 import { tokenAction } from '../slices/TokenSlice';
+import SyncIcon from '@mui/icons-material/Sync';
 
 function Overview() {
      const [open,setOpen] = useState(false)
@@ -68,16 +70,29 @@ function Overview() {
 
      function getProducts () {
         axios.get('https://poolbackendservice.onrender.com/products').then((res)=> {
-            setProducts(res.data.msg)
+            try {
+                console.log(res.data.msg)
+                dispatch(productAction(res.data.msg))
+            }
+            catch(err) {
+                console.error(err)
+            }
+        }).catch((err)=> {
+            console.log("Noch keine Einträge vorhanden!")
         })
+   }
+
+   const reload = ()=> {
+    getTables()
+    getAllOrders()
+    getProducts()
    }
 
 
      useEffect(()=> {
-        getTables()
-        getAllOrders()
-        getProducts()
+       reload()
      }, [])
+
 
 
      const createTable = ()=> {
@@ -195,7 +210,7 @@ function Overview() {
                     
               </Box>
             </Drawer>
-        
+           <Button onClick={reload}><SyncIcon></SyncIcon></Button>
            <Box display={'flex'} alignItems={'center'}>
             <Grid container display={'flex'} alignItems={'center'} justifyContent={'center'} gap={2}  >
                     {tableSelector.map((table, index)=>

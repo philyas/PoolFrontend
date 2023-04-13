@@ -10,7 +10,12 @@ const styles = StyleSheet.create({
     fontSize:24,
     textAlign:'center',
     marginBottom:5,
-    marginTop:10
+    marginTop:20
+  },
+  secondtitle:{
+    fontSize:12,
+    textAlign:'center',
+    marginBottom:10
   },
   text:{
     textAlign:'justify',
@@ -20,6 +25,7 @@ const styles = StyleSheet.create({
   },
   result: {
       fontFamily:'Times-Roman',
+      marginTop:10,
       fontSize:16,
       fontWeight:'bold'
   }
@@ -28,10 +34,11 @@ const styles = StyleSheet.create({
 const Receipt = ({data}) => (
   <Document>
     <Page style={styles.body}>
-       <Text style={styles.title}>Quittung Tisch Nr. </Text>
+       <Text style={styles.title}>Quittung Tisch Nr. {data.tableid} </Text>
+       <Text style={styles.secondtitle}>Vorgangsnummer {data.orderid} </Text>
         {
           data.details.map((row,index)=>
-            <div key={index} style={{display:'flex',width:'100%', flexDirection:'row', justifyContent:'space-between', marginTop:5}}>
+            <div key={index} style={{display:'flex',width:'100%', flexDirection:'row', justifyContent:'space-between', marginTop:15}}>
               <Text style={styles.text}>{new Date(row.createdat).toLocaleString()}</Text>
               <Text style={styles.text}>{row.name}</Text>
               <Text style={styles.text}>{row.quantity} x</Text>
@@ -39,9 +46,10 @@ const Receipt = ({data}) => (
             </div>
           )
         }
-        {
-            <Text style={{textAlign:'center', marginTop:10, fontWeight:'bold', fontSize:16}}>Gesamt: {data.total} €</Text>
-        }
+        
+            <Text style={{textAlign:'center', marginTop:30, fontWeight:'bold', fontSize:14}}>Bestellung: {data.total} €</Text>
+            <Text style={{textAlign:'center', marginTop:10, fontWeight:'bold', fontSize:14}}>Billard: {data.pooltotal} €</Text>
+            <Text style={{textAlign:'center', marginTop:10, fontWeight:'bold', fontSize:14}}>Gesamt: {Number(data.pooltotal)+ Number(data.total)} €</Text>
     </Page>
   </Document>
 );

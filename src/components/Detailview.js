@@ -23,6 +23,7 @@ function Detailview ({onclose,open,tableid}) {
     const [played, setPlayed] = useState(false)
     const [poolBool, setPoolBool] = useState()
     const [orderandpool, setOrderandPool] = useState()
+    const [pooltotal, setPoolTotal] = useState()
 
     const dispatch = useDispatch()
 
@@ -49,6 +50,7 @@ function Detailview ({onclose,open,tableid}) {
             setSelectedOrder(orderid)
             setDetails(res.data.msg.order)
             setTotal(Number(res.data.msg.total).toFixed(2))
+            setPoolTotal(Number(res.data.msg.poolprice).toFixed(2))
             setPoolBool(played)
             setOrderandPool(Number(res.data.msg.orderandpool).toFixed(2))
             setOpenSide(true)
@@ -206,7 +208,7 @@ function Detailview ({onclose,open,tableid}) {
                              title={'Sind Sie sicher?'} text={'Bestellung abschliessen?'} btnColor={'#DC143C'} hoverColor={'red'}
                              ></DialogModule>     
                          </Box>  
-                         <ReceiptButton data={{details:details,total:total}}></ReceiptButton>
+                         <ReceiptButton data={{details:details,total:total, pooltotal:pooltotal, tableid:tableid, orderid:selectedOrder}}></ReceiptButton>
 
                      </Box>
                        

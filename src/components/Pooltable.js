@@ -11,7 +11,7 @@ import billardred from './assets/billardred.png'
 import billardgreen from './assets/billardgreen.png'
 
 
-function Pooltable({source, tableid, busy}){
+function Pooltable({tableid, busy}){
  
     const [openModal,setOpenModal] = useState(false)
     const dispatch = useDispatch()
@@ -25,7 +25,6 @@ function Pooltable({source, tableid, busy}){
             alert(err)
         })
     }
-
 
     const updateStates = ()=> {
         axios.get(`https://poolbackendservice.onrender.com/tables`, 

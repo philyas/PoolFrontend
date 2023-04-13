@@ -7,20 +7,27 @@ const styles = StyleSheet.create({
     paddingLeft:'10%'
   },
   title: {
-    fontSize:24,
+    fontSize:20,
     textAlign:'center',
     marginBottom:5,
-    marginTop:10
+    marginTop:20
   },
   text:{
     textAlign:'justify',
     fontFamily:'Times-Roman',
-    fontSize:16,
+    fontSize:14,
     width:'25%'
+  },
+  headercolum:{
+    textAlign:'justify',
+    fontFamily:'Times-Roman',
+    fontSize:14,
+    width:'25%',
+    fontWeight:'bold'
   },
   result: {
       fontFamily:'Times-Roman',
-      fontSize:16,
+      fontSize:14,
       fontWeight:'bold'
   }
 })
@@ -34,13 +41,19 @@ const MyDoc = ({data}) => (
         <Text style={styles.result}>Billard: {Number(data.pooltime).toFixed(2)} €</Text>
         <Text style={styles.result}>Gesamt: {Number(data.total).toFixed(2)} €</Text>
        </div>
+       <div style={{ display:'flex',width:'100%', flexDirection:'row', justifyContent:'space-between', marginTop:5}}>
+        <Text style={styles.headercolum}>Date</Text>
+          <Text style={styles.headercolum}>Order_Id</Text>
+          <Text style={styles.headercolum}>Table_Id</Text>
+          <Text style={styles.headercolum}>Order Sum (€)</Text>
+        </div>
         {
           data.details.map((row,index)=>
             <div key={index} style={{display:'flex',width:'100%', flexDirection:'row', justifyContent:'space-between', marginTop:5}}>
               <Text style={styles.text}>{new Date(row.createdat).toLocaleString()}</Text>
-              <Text style={styles.text}>{row.name}</Text>
-              <Text style={styles.text}>{row.quantity}</Text>
-              <Text style={styles.text}>{row.tableid}</Text>
+              <Text style={styles.text}>{row.id}</Text>
+              <Text style={styles.text}>{row.table_id}</Text>
+              <Text style={styles.text}>{row.ordertotal}</Text>
             </div>
           )
         }
