@@ -38,7 +38,7 @@ function Pooltable({tableid, busy}){
        ).then((res)=> {
             dispatch(orderAction(res.data.msg))
         })
-    }
+      }
 
 
     const openMenu = ()=> {
@@ -59,7 +59,7 @@ function Pooltable({tableid, busy}){
         "&:hover": {
             background:'darkred'
         }
-    }
+      }
 
 
 

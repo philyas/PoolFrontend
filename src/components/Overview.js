@@ -26,13 +26,13 @@ import SyncIcon from '@mui/icons-material/Sync';
 
 function Overview() {
      const [open,setOpen] = useState(false)
-     const [products, setProducts] = useState([])
      const [product, setProduct] = useState("")
      const [price, setPrice] = useState()
 
      const dispatch = useDispatch()
      const tableSelector = useSelector((state)=> state.table.value)
      const tokenSelector = useSelector((state)=> state.token.value )
+     const products = useSelector((state)=> state.product.value)
 
      const color = 'white'
 
@@ -57,7 +57,6 @@ function Overview() {
      function getAllOrders() {
         axios.get('https://poolbackendservice.onrender.com/orders/all').then((res)=> {
             try {
-                console.log(res.data.msg)
                 dispatch(orderAction(res.data.msg))
             }
             catch(err) {
@@ -71,7 +70,6 @@ function Overview() {
      function getProducts () {
         axios.get('https://poolbackendservice.onrender.com/products').then((res)=> {
             try {
-                console.log(res.data.msg)
                 dispatch(productAction(res.data.msg))
             }
             catch(err) {
@@ -108,6 +106,7 @@ function Overview() {
 
 
      const createProduct = (product)=> {
+        console.log(product)
         if (!product.name || !product.price) return alert('not valid')
         
         axios.post(`https://poolbackendservice.onrender.com/products?name=${product.name}&price=${product.price}`, {},
@@ -153,7 +152,7 @@ function Overview() {
             open={open}
             onClose={()=> setOpen(false) }>
             <Box  className={classes.flex} lg={2} boxShadow={2} style={{ alignItems:'center',height:'100%', display:'flex', flexDirection:'column'}} >   
-                <Box style={{ width:300, height:120, display:'flex', justifyContent:'center', alignItems:'center'}}><img style={{width:120, height:150, margin:'auto'}} src={palaceimg} alt='palaceimg'></img></Box>
+                <Box style={{ width:300, height:100, display:'flex', justifyContent:'center', alignItems:'center'}}><img style={{width:150, height:150, margin:'auto'}} src={palaceimg} alt='palaceimg'></img></Box>
              {
                 tokenSelector.userid === 'admin' ? 
                 <>

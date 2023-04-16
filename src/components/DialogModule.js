@@ -34,7 +34,7 @@ function DialogModule({openHandler, buttonName, title,text, btnColor, hoverColor
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
+        <DialogTitle sx={{textAlign:'center'}} id="alert-dialog-title">
           {title}
         </DialogTitle>
         <DialogContent>

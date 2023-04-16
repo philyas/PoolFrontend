@@ -12,13 +12,13 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 import ReceiptButton from './ReceiptButton';
+import Calculator from './Calculator';
 
 
 function Detailview ({onclose,open,tableid}) {
     const [selectedOrder, setSelectedOrder] = useState()
     const [details, setDetails] = useState([])
     const [total,setTotal] = useState()
-    const [products, setProducts] = useState([])
     const [checked, setChecked] = useState(false)
     const [played, setPlayed] = useState(false)
     const [poolBool, setPoolBool] = useState()
@@ -43,6 +43,7 @@ function Detailview ({onclose,open,tableid}) {
 
     const orderSelector = useSelector((state)=> state.order.value)
     const OrderSortedByTable = orderSelector.filter((order)=> order.table_id === Number(tableid))
+    const productSelector = useSelector((state)=> state.product.value)
     const [openSide, setOpenSide] = useState(false)
 
     const getDetail = (orderid, played)=> {
@@ -75,12 +76,6 @@ function Detailview ({onclose,open,tableid}) {
         })
     }
 
-   const getProducts = ()=> {
-        axios.get('https://poolbackendservice.onrender.com/products').then((res)=> {
-            setProducts(res.data.msg)
-        })
-   }
-
    const completeOrder = ()=> {
       axios.post(`https://poolbackendservice.onrender.com/completeorder?orderid=${selectedOrder}&played=${played}`).then((res)=> {
         getDetail(selectedOrder, played)
@@ -99,9 +94,9 @@ function Detailview ({onclose,open,tableid}) {
         dispatch(tableAction(res.data.msg))
     })
 
-        axios.get(`https://poolbackendservice.onrender.com/orders/all`).then((res)=> {
-            dispatch(orderAction(res.data.msg))
-        })
+    axios.get(`https://poolbackendservice.onrender.com/orders/all`).then((res)=> {
+        dispatch(orderAction(res.data.msg))
+    })
    }
 
 
@@ -133,11 +128,6 @@ function Detailview ({onclose,open,tableid}) {
      }
    }
 
-
-    // initial load products
-   useEffect(()=> {
-    getProducts()
-   },[])
 
     return(
         <Modal
@@ -182,9 +172,16 @@ function Detailview ({onclose,open,tableid}) {
 
                         <Box  display={'flex'} flexDirection={'column'} >
                                 <Button sx={{width:100,  margin:'1rem auto', background:'white',"&:hover":{background:'white'}, color:'black'}} variant='contained' onClick={()=> setOpenSide(false)}><KeyboardBackspaceIcon></KeyboardBackspaceIcon></Button>
-                                <p>Bestellungsdetails</p>
+                                <p style={{color:'black'}}>Bestellungsdetails</p>
+                                <Box p={1} boxShadow={2} width={'80%'} margin={'auto'} bgcolor={'white'} display={'flex'} flexDirection={'row'} justifyContent='space-between'>
+                                     <p style={{flex:'1 1 0', fontWeight:'bold', color:'black'}}></p>
+                                    <p style={{flex:'1 1 0', color:'black'}}>Name</p> 
+                                    <p style={{flex:'1 1 0', color:'black'}}>Menge</p>   
+                                    <p style={{flex:'1 1 0', color:'black'}}>Preis</p>   
+                                    <p style={{flex:'1 1 0', color:'black'}}></p>
+                                </Box>   
                                 { details.map((item,index)=> 
-                                <Box p={1} boxShadow={2} width={'80%'} margin={'auto'} bgcolor={'white'} key={index} display={'flex'} flexDirection={'row'} justifyContent='space-around'>
+                                <Box p={1} boxShadow={2} width={'80%'} margin={'auto'} bgcolor={'white'} key={index} display={'flex'} flexDirection={'row'} justifyContent='space-between'>
                                     <Button onClick={()=> decreaseItem(item.product_id)} style={{flex:'1 1 0',fontWeight:'bold', fontSize:20, color:'#696969'}} >-</Button>
                                     <p style={{flex:'1 1 0'}}>{item.name}</p> 
                                     <p style={{flex:'1 1 0'}}>{item.quantity} x</p>   
@@ -193,8 +190,8 @@ function Detailview ({onclose,open,tableid}) {
                                 </Box>   
                                 )}
                                 {selectedOrder ?   <Box boxShadow={3} bgcolor={'white'} width={'80%'}  p={1} margin='2rem auto' display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'center'} gap={2}>
-                                    <p style={{color:'#696969'}}>Gesamt</p>
-                                    <p style={{color:'#696969'}}>{poolBool? orderandpool : total}</p>
+                                    <p style={{color:'black'}}>Gesamt</p>
+                                    <p style={{color:'black'}}>{poolBool? orderandpool : total}</p>
                                 </Box>: <p>Bitte Bestellung wählen</p> }
 
                                 <FormGroup sx={{display:'flex', justifyContent:'center', alignItems:'center'}}>
@@ -202,11 +199,12 @@ function Detailview ({onclose,open,tableid}) {
                                 </FormGroup>
                         </Box>
 
-                            <ProductSelection products={products} addItem={addItem}></ProductSelection>
+                            <ProductSelection products={productSelector} addItem={addItem}></ProductSelection>
                          <Box sx={{position:'relative'}} width={300} m={'auto'} marginY={5}>
                              <DialogModule openHandler={completeOrder} buttonName={'Bestellung abschliessen'}
-                             title={'Sind Sie sicher?'} text={'Bestellung abschliessen?'} btnColor={'#DC143C'} hoverColor={'red'}
-                             ></DialogModule>     
+                             title={'Abschlussrechnung'} text={''} btnColor={'#DC143C'} hoverColor={'red'}>
+                                    <Calculator data={{details:details, total:total, pooltotal:pooltotal}}></Calculator>
+                            </DialogModule>     
                          </Box>  
                          <ReceiptButton data={{details:details,total:total, pooltotal:pooltotal, tableid:tableid, orderid:selectedOrder}}></ReceiptButton>
 
