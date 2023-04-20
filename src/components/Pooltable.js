@@ -33,7 +33,7 @@ function Pooltable({tableid, busy}){
             dispatch(tableAction(res.data.msg))
         })
 
-       axios.get(`https://poolbackendservice.onrender.com/orders/all`, 
+       axios.get(`https://poolbackendservice.onrender.com/orders`, 
        { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
        ).then((res)=> {
             dispatch(orderAction(res.data.msg))

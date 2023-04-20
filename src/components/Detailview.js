@@ -84,7 +84,7 @@ function Detailview ({onclose,open,tableid}) {
 
    const completeOrder = ()=> {
       axios.post(`https://poolbackendservice.onrender.com/completeorder?orderid=${selectedOrder}&played=${played}`, 
-      { },     { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+      { },  { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
       ).then((res)=> {
         getDetail(selectedOrder, played)
         updateStatus()
@@ -112,7 +112,8 @@ function Detailview ({onclose,open,tableid}) {
 
    const addItem = (productid)=> {
     if (!productid) return alert("Bitte Produkt wählen!")
-    axios.post(`https://poolbackendservice.onrender.com/additem?orderid=${selectedOrder}&productid=${productid}`).then((res)=> {
+    axios.post(`https://poolbackendservice.onrender.com/additem?orderid=${selectedOrder}&productid=${productid}`, {},
+    { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}).then((res)=> {
         getDetail(selectedOrder)
       }).catch((err)=> {
         alert(err)
