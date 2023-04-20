@@ -31,7 +31,9 @@ const Dashboard = ()=> {
 
     const fetchData = ()=> {
             if (!day) {
-                axios.get(`https://poolbackendservice.onrender.com/filterorder?month=${month}&year=${year}`).then((res)=> {
+                axios.get(`https://poolbackendservice.onrender.com/filterorder?month=${month}&year=${year}`, 
+                { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+                ).then((res)=> {
                     setData(res.data.msg.details)
                     setSubtotal(res.data.msg.total[0].sum)
                     setTotal(res.data.msg.orderandpool)
@@ -41,7 +43,9 @@ const Dashboard = ()=> {
                 })
             }
             else {
-                axios.get(`https://poolbackendservice.onrender.com/filterorder?month=${month}&year=${year}&day=${day}`).then((res)=> {
+                axios.get(`https://poolbackendservice.onrender.com/filterorder?month=${month}&year=${year}&day=${day}`, 
+                { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+                ).then((res)=> {
                     setData(res.data.msg.details)
                     setSubtotal(res.data.msg.total[0].sum)
                     setTotal(res.data.msg.orderandpool)

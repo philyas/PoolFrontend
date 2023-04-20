@@ -49,7 +49,9 @@ const Loginpage = ()=> {
            { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }} )
            .then((res)=> {
             const userid = res.data.userinfo.authorizedData.userid
-            dispatch(tokenAction({logged:true,userid:userid}))
+            const companyid = res.data.userinfo.authorizedData.companyid
+            const userrole = res.data.userinfo.authorizedData.userrole
+            dispatch(tokenAction({logged:true,userid:userid, companyid:companyid, userrole:userrole}))
               navigate('/home')
            })
            .catch((err)=> {

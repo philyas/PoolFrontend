@@ -55,7 +55,9 @@ function Overview() {
      }
 
      function getAllOrders() {
-        axios.get('https://poolbackendservice.onrender.com/orders/all').then((res)=> {
+        axios.get('https://poolbackendservice.onrender.com/orders', 
+        { headers: { authorization: 'BEARER '+ localStorage.getItem('token')}}
+        ).then((res)=> {
             try {
                 dispatch(orderAction(res.data.msg))
             }
@@ -68,7 +70,9 @@ function Overview() {
      }
 
      function getProducts () {
-        axios.get('https://poolbackendservice.onrender.com/products').then((res)=> {
+        axios.get('https://poolbackendservice.onrender.com/products' , 
+        { headers: { authorization: 'BEARER '+ localStorage.getItem('token')}}
+        ).then((res)=> {
             try {
                 dispatch(productAction(res.data.msg))
             }
@@ -154,7 +158,7 @@ function Overview() {
             <Box  className={classes.flex} lg={2} boxShadow={2} style={{ alignItems:'center',height:'100%', display:'flex', flexDirection:'column'}} >   
                 <Box style={{ width:300, height:100, display:'flex', justifyContent:'center', alignItems:'center'}}><img style={{width:150, height:150, margin:'auto'}} src={palaceimg} alt='palaceimg'></img></Box>
              {
-                tokenSelector.userid === 'admin' ? 
+                tokenSelector.userrole === 'admin' ? 
                 <>
                              <p style={{marginBottom:0,color:color }}>Tisch hinzufügen</p>
                 <DialogModule openHandler={createTable} title={'Sind Sie sicher?'}

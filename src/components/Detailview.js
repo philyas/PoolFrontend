@@ -47,7 +47,9 @@ function Detailview ({onclose,open,tableid}) {
     const [openSide, setOpenSide] = useState(false)
 
     const getDetail = (orderid, played)=> {
-        axios.get(`https://poolbackendservice.onrender.com/orderinformation?orderid=${orderid}`).then((res)=> {
+        axios.get(`https://poolbackendservice.onrender.com/orderinformation?orderid=${orderid}`, 
+        { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+        ).then((res)=> {
             setSelectedOrder(orderid)
             setDetails(res.data.msg.order)
             setTotal(Number(res.data.msg.total).toFixed(2))
@@ -61,7 +63,9 @@ function Detailview ({onclose,open,tableid}) {
  
 
     const increaseItem = (productid)=> {
-        axios.post(`https://poolbackendservice.onrender.com/additem?orderid=${selectedOrder}&productid=${productid}`).then((res)=> {
+        axios.post(`https://poolbackendservice.onrender.com/additem?orderid=${selectedOrder}&productid=${productid}`, 
+        { },     { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+        ).then((res)=> {
             getDetail(selectedOrder)
         }).catch((err)=> {
             alert(err)
@@ -69,7 +73,9 @@ function Detailview ({onclose,open,tableid}) {
     }
 
     const decreaseItem = (productid)=> {
-        axios.post(`https://poolbackendservice.onrender.com/removeitem?orderid=${selectedOrder}&productid=${productid}`).then((res)=> {
+        axios.post(`https://poolbackendservice.onrender.com/removeitem?orderid=${selectedOrder}&productid=${productid}` , 
+        { },     { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+        ).then((res)=> {
             getDetail(selectedOrder)
         }).catch((err)=> {
             alert(err)
@@ -77,7 +83,9 @@ function Detailview ({onclose,open,tableid}) {
     }
 
    const completeOrder = ()=> {
-      axios.post(`https://poolbackendservice.onrender.com/completeorder?orderid=${selectedOrder}&played=${played}`).then((res)=> {
+      axios.post(`https://poolbackendservice.onrender.com/completeorder?orderid=${selectedOrder}&played=${played}`, 
+      { },     { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+      ).then((res)=> {
         getDetail(selectedOrder, played)
         updateStatus()
         alert(res.data.msg)
@@ -94,7 +102,9 @@ function Detailview ({onclose,open,tableid}) {
         dispatch(tableAction(res.data.msg))
     })
 
-    axios.get(`https://poolbackendservice.onrender.com/orders/all`).then((res)=> {
+    axios.get(`https://poolbackendservice.onrender.com/orders`, 
+    { headers: {authorization: 'BEARER '+ localStorage.getItem('token')}}
+    ).then((res)=> {
         dispatch(orderAction(res.data.msg))
     })
    }
