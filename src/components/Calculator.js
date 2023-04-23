@@ -65,7 +65,9 @@ const Calculator = ({data})=> {
           
                 <p style={{fontWeight:'bold', flex:'2 1 0'}}>Produkt</p>
                 <p style={{fontWeight:'bold', flex:'1 1 0'}}>Anzahl</p>
-                <p  style={{fontWeight:'bold', flex:'1 1 0'}} ></p>
+                
+                <Button sx={{margin:'10px auto'}} variant="contained" onClick={addSubOrder}>Sub</Button>
+
             </Box>
             {arr.map((item,key)=> 
             <Box key={key} sx={{display:'flex', justifyContent:'space-between'}}> 
@@ -77,7 +79,6 @@ const Calculator = ({data})=> {
             )}
             <Box textAlign={'center'}>
                 <hr></hr>
-                <Button sx={{margin:'10px auto'}} variant="contained" onClick={addSubOrder}>Add Sub</Button>
                 {subArr.length !== 0 ? <p>1.Bstg. : {Number(subArr[0]).toFixed(2)}</p> : null}
                 {subArr.slice(1).map((num, index)=> <p key={index}>{index+2 +".Bstg. : " + Number((num-subArr[index])).toFixed(2)}</p>)}
                 <hr></hr>

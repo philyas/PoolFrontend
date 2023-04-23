@@ -1,6 +1,5 @@
 import {Modal, Box,  Button, FormControlLabel, FormGroup, Checkbox} from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect, useState } from 'react';
 import axios from 'axios';
 import ProductSelection from './ProductSelection';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -13,6 +12,8 @@ import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 import ReceiptButton from './ReceiptButton';
 import Calculator from './Calculator';
+import { useState, useRef } from 'react';
+import Draggable from 'react-draggable';
 
 
 function Detailview ({onclose,open,tableid}) {
@@ -42,6 +43,7 @@ function Detailview ({onclose,open,tableid}) {
     }
 
     const orderSelector = useSelector((state)=> state.order.value)
+    // refactor filter in backend/database
     const OrderSortedByTable = orderSelector.filter((order)=> order.table_id === Number(tableid))
     const productSelector = useSelector((state)=> state.product.value)
     const [openSide, setOpenSide] = useState(false)
@@ -82,6 +84,8 @@ function Detailview ({onclose,open,tableid}) {
         })
     }
 
+
+    
    const completeOrder = ()=> {
       axios.post(`https://poolbackendservice.onrender.com/completeorder?orderid=${selectedOrder}&played=${played}`, 
       { },  { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
@@ -139,6 +143,46 @@ function Detailview ({onclose,open,tableid}) {
      }
    }
 
+   const handleSwipeDelete = (id, data) => {
+        //Delete Logic!
+               axios.post(`https://poolbackendservice.onrender.com/removefromorder?orderid=${selectedOrder}&productid=${id}` , 
+        { },  { headers: { authorization: 'BEARER '+ localStorage.getItem('token')  }}
+        ).then((res)=> {
+            getDetail(selectedOrder)
+        }).catch((err)=> {
+            alert(err)
+        })
+   };
+
+
+   // PRODUCT ITEM
+   function ProductItem({ item, handleSwipeDelete }) {
+            const ref = useRef(null);
+            const [position, setPosition] = useState({x:0, y:0})
+        
+            const handleDragStop = (event, data) => {
+            if (data.x < -150) {
+                console.log(data.x)
+                handleSwipeDelete(item.product_id, data);
+            }
+    };
+
+    return (
+        <Box p={1} boxShadow={2} width={'70%'} margin={'auto'} bgcolor={'white'}  display={'flex'} flexDirection={'row'} justifyContent='space-between'>
+            <Button onClick={()=> decreaseItem(item.product_id)} style={{flex:'1 1 0',fontWeight:'bold', fontSize:20, color:'#696969'}} >-</Button>
+            <Draggable position={position} nodeRef={ref} axis="x" onStop={handleDragStop}>
+            <Box  ref={ref} p={1}  width={'70%'} margin={'auto'} bgcolor={'white'}  display={'flex'} flexDirection={'row'} justifyContent='space-between'>
+                <p style={{flex:'1 1 0'}}>{item.name}</p> 
+                <p style={{flex:'1 1 0'}}>{item.quantity} x</p>   
+                <p style={{flex:'1 1 0'}}>{item.price}</p>   
+            </Box>   
+            </Draggable>
+            <Button onClick={()=> increaseItem(item.product_id)}  style={{flex:'1 1 0',fontWeight:'bold', fontSize:20, color:'#696969'}}>+</Button>
+        </Box>
+    );
+  }
+
+
 
     return(
         <Modal
@@ -179,12 +223,12 @@ function Detailview ({onclose,open,tableid}) {
                          sx={{
                             transition:'0.3s', zIndex:3, left:openSide ? 0 : '100%'
                         }}
-                     top={0} width='100%' heigth='100vh'>
+                     top={0} width='100%' height='100vh'>
 
                         <Box  display={'flex'} flexDirection={'column'} >
                                 <Button sx={{width:100,  margin:'1rem auto', background:'white',"&:hover":{background:'white'}, color:'black'}} variant='contained' onClick={()=> setOpenSide(false)}><KeyboardBackspaceIcon></KeyboardBackspaceIcon></Button>
                                 <p style={{color:'black'}}>Bestellungsdetails</p>
-                                <Box p={1} boxShadow={2} width={'80%'} margin={'auto'} bgcolor={'white'} display={'flex'} flexDirection={'row'} justifyContent='space-between'>
+                                <Box  p={1} boxShadow={2} width={'70%'} margin={'auto'} bgcolor={'white'} display={'flex'} flexDirection={'row'} justifyContent='space-between'>
                                      <p style={{flex:'1 1 0', fontWeight:'bold', color:'black'}}></p>
                                     <p style={{flex:'1 1 0', color:'black'}}>Name</p> 
                                     <p style={{flex:'1 1 0', color:'black'}}>Menge</p>   
@@ -192,15 +236,9 @@ function Detailview ({onclose,open,tableid}) {
                                     <p style={{flex:'1 1 0', color:'black'}}></p>
                                 </Box>   
                                 { details.map((item,index)=> 
-                                <Box p={1} boxShadow={2} width={'80%'} margin={'auto'} bgcolor={'white'} key={index} display={'flex'} flexDirection={'row'} justifyContent='space-between'>
-                                    <Button onClick={()=> decreaseItem(item.product_id)} style={{flex:'1 1 0',fontWeight:'bold', fontSize:20, color:'#696969'}} >-</Button>
-                                    <p style={{flex:'1 1 0'}}>{item.name}</p> 
-                                    <p style={{flex:'1 1 0'}}>{item.quantity} x</p>   
-                                    <p style={{flex:'1 1 0'}}>{item.price}</p>   
-                                    <Button onClick={()=> increaseItem(item.product_id)} style={{flex:'1 1 0',fontWeight:'bold', fontSize:20, color:'#696969'}}>+</Button>
-                                </Box>   
+                                    <ProductItem key={index} item={item} handleSwipeDelete={handleSwipeDelete}></ProductItem>
                                 )}
-                                {selectedOrder ?   <Box boxShadow={3} bgcolor={'white'} width={'80%'}  p={1} margin='2rem auto' display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'center'} gap={2}>
+                                {selectedOrder ?   <Box boxShadow={3} bgcolor={'white'} width={'70%'}  p={1} margin='2rem auto' display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'center'} gap={2}>
                                     <p style={{color:'black'}}>Gesamt</p>
                                     <p style={{color:'black'}}>{poolBool? orderandpool : total}</p>
                                 </Box>: <p>Bitte Bestellung wählen</p> }

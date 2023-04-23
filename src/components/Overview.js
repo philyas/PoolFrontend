@@ -112,7 +112,6 @@ function Overview() {
      const createProduct = (product)=> {
         console.log(product)
         if (!product.name || !product.price) return alert('not valid')
-        
         axios.post(`https://poolbackendservice.onrender.com/products?name=${product.name}&price=${product.price}`, {},
         { headers: { authorization: 'BEARER '+ localStorage.getItem('token')}}
         ).then((res)=> {
